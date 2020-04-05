@@ -1,24 +1,16 @@
 package br.com.kafkademo.ecommerce;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.serialization.StringDeserializer;
-
-import java.time.Duration;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
 
 public class FraudDetectorService {
 
     // serviço para checar se houve fraude em uma compra
     public static void main(String[] args) {
         var fraudService = new FraudDetectorService();
-        var service = new KafkaService(FraudDetectorService.class.getSimpleName(),
-                "ECOMMERCE_NEW_ORDER", fraudService::parse);
-        service.run();
+        try (var service = new KafkaService(FraudDetectorService.class.getSimpleName(),
+                "ECOMMERCE_NEW_ORDER", fraudService::parse)) {
+            service.run();
+        }
     }
 
     private void parse(ConsumerRecord<String, String> record) {
